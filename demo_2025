@@ -138,4 +138,3 @@ This code includes the following security vulnerabilities:
 12. Insecure Error Handling - Exposing detailed error information
 13. Insecure Configuration - Running with debug=True in production
 
-Each vulnerability is clearly commented to help you understand what security issue is being demonstrated. This should provide a good test case for your security agent.
