@@ -1,27 +1,21 @@
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.io.*;
 
-public class InsecureSqlExample {
+public class InsecureDeserializationExample {
+    public static void main(String[] args) {
+        // Assume 'malicious_input.ser' is a file created by an attacker
+        // containing a serialized object designed to exploit the application.
+        try {
+            FileInputStream fis = new FileInputStream("malicious_input.ser");
+            ObjectInputStream ois = new ObjectInputStream(fis);
 
-    // Insecure method vulnerable to SQL injection
-    public void selectUser(String username, String password) throws SQLException {
-        // This is a terrible idea: user input is directly concatenated into the query string
-        String query = "SELECT userid FROM users WHERE username = '" + username + "' AND password = '" + password + "'";
+            // The vulnerability is in blindly calling readObject() on untrusted data.
+            Object obj = ois.readObject(); // This is where the exploit can be executed
+            ois.close();
+            fis.close();
+            System.out.println("Object deserialized: " + obj);
 
-        // Establish connection (ensure DB_URL, USER, PASS are defined)
-        try (Connection connection = DriverManager.getConnection("DB_URL", "USER", "PASS");
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(query)) {
-
-            // Process the result set (attacker could bypass login with ' OR 1=1 --)
-            if (resultSet.next()) {
-                System.out.println("Login successful for User ID: " + resultSet.getInt("userid"));
-            } else {
-                System.out.println("Invalid username or password.");
-            }
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
         }
     }
 }
