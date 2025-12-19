@@ -1,1 +1,27 @@
-Hello
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+public class InsecureSqlExample {
+
+    // Insecure method vulnerable to SQL injection
+    public void selectUser(String username, String password) throws SQLException {
+        // This is a terrible idea: user input is directly concatenated into the query string
+        String query = "SELECT userid FROM users WHERE username = '" + username + "' AND password = '" + password + "'";
+
+        // Establish connection (ensure DB_URL, USER, PASS are defined)
+        try (Connection connection = DriverManager.getConnection("DB_URL", "USER", "PASS");
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(query)) {
+
+            // Process the result set (attacker could bypass login with ' OR 1=1 --)
+            if (resultSet.next()) {
+                System.out.println("Login successful for User ID: " + resultSet.getInt("userid"));
+            } else {
+                System.out.println("Invalid username or password.");
+            }
+        }
+    }
+}
