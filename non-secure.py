@@ -19,6 +19,6 @@ def get_user_status_insecure(username):
     finally:
         conn.close()
 
-# An attacker could use this input to bypass the login or extract data - test 2626
+# An attacker could use this input to bypass the login or extract data - test 2626 TEST
 # Example attack string: "' OR '1'='1"
 # The resulting query would be: "SELECT status FROM users WHERE username = '' OR '1'='1'"
