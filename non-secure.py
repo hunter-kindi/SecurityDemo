@@ -19,6 +19,19 @@ def get_user_status_insecure(username):
     finally:
         conn.close()
 
+import os
+
+
+def execute_ping(target):
+    # INSECURE: Directly concatenates user input into a shell command.
+    # Payload example for testing: 127.0.0.1; ls -la
+    command = "ping -c 4 " + target
+    os.system(command)
+
+
+user_input = input("Enter IP to ping: ")
+execute_ping(user_input)
+
 # An attacker could use this input to bypass the login or extract data 
 # Example attack string: "' OR '1'='1"
 # The resulting query would be: "SELECT status FROM users WHERE username = '' OR '1'='1'"
